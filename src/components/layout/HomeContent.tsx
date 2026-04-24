@@ -5,7 +5,7 @@ import CountUp from '../reactbits/CountUp'
 import LightRaysBackground from '../reactbits/LightRaysBackground'
 import ProfileCard from '../reactbits/ProfileCard'
 import BlurText from '../reactbits/BlurText'
-import SpaceCapsuleScene from '../space-capsule/SpaceCapsuleScene'
+import V0CardScanner from '../projects/V0CardScanner'
 import './HomeContent.css'
 
 type SectionId = 'about' | 'skills' | 'projects' | 'contact'
@@ -329,7 +329,22 @@ export default function HomeContent({ onSectionChange, lang = 'zh' }: HomeConten
       <section className="projects-section projects-section--showcase" id="projects" ref={projectsRef}>
         <div className="projects-showcase">
           <div className="projects-showcase__viewport">
-            <SpaceCapsuleScene />
+            <V0CardScanner lang={lang} />
+          </div>
+          <div className="projects-showcase__overlay">
+            <div className="projects-showcase__top">
+              <div className="projects-showcase__head">
+                <h2>{i18n.t('projects.title')}</h2>
+                <span className="projects-line" aria-hidden="true" />
+                <p className="projects-showcase__subtitle">{i18n.t('projects.gallerySubtitle')}</p>
+              </div>
+              <aside className="projects-showcase__rail">
+                <p className="projects-showcase__quote">{i18n.t('projects.galleryQuote')}</p>
+                <div className="projects-showcase__select-wrap">
+                  <span className="projects-showcase__select-label">{i18n.t('projects.galleryDragHint')}</span>
+                </div>
+              </aside>
+            </div>
           </div>
         </div>
       </section>

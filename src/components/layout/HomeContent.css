@@ -252,7 +252,7 @@
   padding: 0;
   overflow: hidden;
   min-height: calc(100dvh - 74px);
-  background: #eef1f6;
+  background: #000;
 }
 
 .projects-showcase {
@@ -274,7 +274,8 @@
   top: 0;
   z-index: 3;
   pointer-events: none;
-  padding: 24px clamp(20px, 5vw, 72px) 20px;
+  padding: 42px clamp(24px, 6vw, 88px) 20px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
 }
 
 .projects-showcase__top {
