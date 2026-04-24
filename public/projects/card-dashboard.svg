@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="240" viewBox="0 0 400 240">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0f4ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#g)" rx="12"/>
+  <path d="M40 180 L120 120 L200 150 L280 80 L360 100" stroke="#00AFFF" stroke-width="3" fill="none" opacity="0.35"/>
+  <text x="200" y="128" text-anchor="middle" fill="#0f172a" font-family="Inter,PingFang SC,sans-serif" font-size="20" font-weight="700">Dashboard</text>
+</svg>

@@ -1,0 +1,48 @@
+.bubble-menu {
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(24, 24, 27, 0.14);
+  backdrop-filter: blur(4px);
+}
+
+.bubble-menu-item {
+  margin: 0;
+  padding: 0;
+}
+
+.bubble-menu-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #18181b;
+  overflow: hidden;
+}
+
+.bubble-menu-pill {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #f0f0f0;
+}
+
+.bubble-menu-text {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bubble-menu-link:not(.is-active):hover .bubble-menu-text {
+  opacity: 0.72;
+}

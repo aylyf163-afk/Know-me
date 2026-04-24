@@ -1,0 +1,36 @@
+.space-capsule-host {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 60%, #f4f7fb 0%, #e5ebf3 70%, #dce3ee 100%);
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+}
+
+.space-capsule-host:active {
+  cursor: grabbing;
+}
+
+.space-capsule-host canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  outline: none;
+}
+
+.space-capsule-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(210, 222, 240, 0.35) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(210, 222, 240, 0.0) 35%, rgba(210, 222, 240, 0.15) 100%);
+}
+
+@media (max-width: 768px) {
+  .space-capsule-host {
+    background: radial-gradient(circle at 50% 55%, #f4f7fb 0%, #e2e8f1 80%);
+  }
+}
