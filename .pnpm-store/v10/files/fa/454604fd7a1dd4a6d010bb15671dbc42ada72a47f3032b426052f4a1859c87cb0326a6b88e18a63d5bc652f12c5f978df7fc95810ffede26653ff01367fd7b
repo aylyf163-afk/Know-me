@@ -71,7 +71,7 @@ function normalizeHook(hook) {
 	unreachable("Invalid hook type");
 }
 //#endregion
-//#region src/plugin/minimal-plugin-context.ts
+//#region src/plugin/minimal-plugin-Context.tsx
 var MinimalPluginContextImpl = class {
 	info;
 	warn;
@@ -889,7 +889,7 @@ const fsModule = {
 	writeFile: fsp.writeFile
 };
 //#endregion
-//#region src/plugin/plugin-context.ts
+//#region src/plugin/plugin-Context.tsx
 var PluginContextImpl = class extends MinimalPluginContextImpl {
 	fs = fsModule;
 	getModuleInfo;
@@ -996,7 +996,7 @@ var PluginContextImpl = class extends MinimalPluginContextImpl {
 	}
 };
 //#endregion
-//#region src/plugin/load-plugin-context.ts
+//#region src/plugin/load-plugin-Context.tsx
 var LoadPluginContextImpl = class extends PluginContextImpl {
 	constructor(outputOptions, context, plugin, data, inner, moduleId, onLog, logLevelOption, watchMode) {
 		super(outputOptions, context, plugin, data, onLog, logLevelOption, watchMode, moduleId);
@@ -1007,7 +1007,7 @@ var LoadPluginContextImpl = class extends PluginContextImpl {
 	}
 };
 //#endregion
-//#region src/plugin/transform-plugin-context.ts
+//#region src/plugin/transform-plugin-Context.tsx
 var TransformPluginContextImpl = class extends PluginContextImpl {
 	constructor(outputOptions, context, plugin, data, inner, moduleId, moduleSource, onLog, LogLevelOption, watchMode) {
 		super(outputOptions, context, plugin, data, onLog, LogLevelOption, watchMode, moduleId);

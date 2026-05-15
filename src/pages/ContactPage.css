@@ -1,0 +1,119 @@
+.contact-section {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: grid;
+  align-content: start;
+  gap: 34px;
+  padding: 42px clamp(24px, 6vw, 88px) 56px;
+  scroll-margin-top: 88px;
+  border-top: 1px solid rgba(17, 24, 39, 0.08);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(80, 117, 212, 0.16), rgba(5, 8, 20, 0.94) 46%),
+    linear-gradient(180deg, #090b18 0%, #050611 100%);
+}
+
+.contact-light-rays {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.contact-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.contact-header-left h2 {
+  margin: 0;
+  font-size: clamp(42px, 4.5vw, 68px);
+  letter-spacing: 0.01em;
+  color: rgba(241, 245, 255, 0.96);
+}
+
+.contact-line {
+  display: block;
+  width: 60px;
+  height: 4px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(225, 236, 255, 0.92) 0%, rgba(225, 236, 255, 0.1) 100%);
+}
+
+.contact-intro {
+  margin: 0;
+  max-width: 620px;
+  text-align: right;
+  font-size: clamp(18px, 1.8vw, 28px);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  color: rgba(225, 236, 255, 0.76);
+}
+
+.contact-card-wrap {
+  margin: 0 auto;
+  width: min(460px, 100%);
+}
+
+.contact-card-info p {
+  margin: 12px 0;
+  font-size: 18px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.contact-card-info-line {
+  margin: 12px 0;
+  font-size: 18px;
+  color: #ffffff;
+  text-align: center;
+  justify-content: center;
+}
+
+.contact-profile-card {
+  width: min(420px, 100%);
+  margin-inline: auto;
+}
+
+.contact-profile-card .pc-card {
+  height: min(78svh, 520px);
+}
+
+@media (max-width: 900px) {
+  .contact-section {
+    gap: 22px;
+    padding: 28px 16px 44px;
+  }
+
+  .contact-header {
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .contact-header-left h2 {
+    font-size: clamp(34px, 10vw, 54px);
+  }
+
+  .contact-intro {
+    max-width: none;
+    text-align: left;
+    font-size: 16px;
+  }
+
+  .contact-card-wrap {
+    margin-top: 0;
+  }
+
+  .contact-profile-card .pc-card {
+    height: min(64svh, 420px);
+  }
+}

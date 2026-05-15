@@ -3,6 +3,7 @@ import HeaderBar from './components/layout/HeaderBar'
 import HomeContent from './components/layout/HomeContent'
 import { useMemo, useState } from 'react'
 import i18n from './i18n'
+import { SECTION_ORDER, type SectionId } from './pages/constants.ts'
 
 function App() {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -16,7 +17,6 @@ function App() {
     ],
     [lang],
   )
-  const sectionOrder = ['about', 'skills', 'projects', 'contact'] as const
 
   return (
     <div className="app-shell">
@@ -36,7 +36,7 @@ function App() {
       <HomeContent
         lang={lang}
         onSectionChange={(id) => {
-          const idx = sectionOrder.indexOf(id as (typeof sectionOrder)[number])
+          const idx = SECTION_ORDER.indexOf(id as SectionId)
           if (idx !== -1) setActiveIndex(idx)
         }}
       />

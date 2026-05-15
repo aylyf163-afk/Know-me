@@ -61,6 +61,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
 }) => {
   const wrapRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLElement | null>(null);
 
   const enterTimerRef = useRef<number | null>(null);
   const leaveRafRef = useRef<number | null>(null);
@@ -82,12 +83,12 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
     let initialUntil = 0;
 
     const setVarsFromXY = (x: number, y: number) => {
-      const shell = shellRef.current;
+      const card = cardRef.current;
       const wrap = wrapRef.current;
-      if (!shell || !wrap) return;
+      if (!card || !wrap) return;
 
-      const width = shell.clientWidth || 1;
-      const height = shell.clientHeight || 1;
+      const width = card.clientWidth || 1;
+      const height = card.clientHeight || 1;
 
       const percentX = clamp((100 / width) * x);
       const percentY = clamp((100 / height) * y);
@@ -157,9 +158,9 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
         start();
       },
       toCenter() {
-        const shell = shellRef.current;
-        if (!shell) return;
-        this.setTarget(shell.clientWidth / 2, shell.clientHeight / 2);
+        const card = cardRef.current;
+        if (!card) return;
+        this.setTarget(card.clientWidth / 2, card.clientHeight / 2);
       },
       beginInitial(durationMs: number) {
         initialUntil = performance.now() + durationMs;
@@ -184,9 +185,9 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
 
   const handlePointerMove = useCallback(
     (event: PointerEvent) => {
-      const shell = shellRef.current;
-      if (!shell || !tiltEngine) return;
-      const { x, y } = getOffsets(event, shell);
+      const card = cardRef.current;
+      if (!card || !tiltEngine) return;
+      const { x, y } = getOffsets(event, card);
       tiltEngine.setTarget(x, y);
     },
     [tiltEngine]
@@ -194,25 +195,25 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
 
   const handlePointerEnter = useCallback(
     (event: PointerEvent) => {
-      const shell = shellRef.current;
-      if (!shell || !tiltEngine) return;
+      const card = cardRef.current;
+      if (!card || !tiltEngine) return;
 
-      shell.classList.add('active');
-      shell.classList.add('entering');
+      card.classList.add('active');
+      card.classList.add('entering');
       if (enterTimerRef.current) window.clearTimeout(enterTimerRef.current);
       enterTimerRef.current = window.setTimeout(() => {
-        shell.classList.remove('entering');
+        card.classList.remove('entering');
       }, ANIMATION_CONFIG.ENTER_TRANSITION_MS);
 
-      const { x, y } = getOffsets(event, shell);
+      const { x, y } = getOffsets(event, card);
       tiltEngine.setTarget(x, y);
     },
     [tiltEngine]
   );
 
   const handlePointerLeave = useCallback(() => {
-    const shell = shellRef.current;
-    if (!shell || !tiltEngine) return;
+    const card = cardRef.current;
+    if (!card || !tiltEngine) return;
 
     tiltEngine.toCenter();
 
@@ -220,7 +221,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
       const { x, y, tx, ty } = tiltEngine.getCurrent();
       const settled = Math.hypot(tx - x, ty - y) < 0.6;
       if (settled) {
-        shell.classList.remove('active');
+        card.classList.remove('active');
         leaveRafRef.current = null;
       } else {
         leaveRafRef.current = requestAnimationFrame(checkSettle);
@@ -232,19 +233,21 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
 
   const handleDeviceOrientation = useCallback(
     (event: DeviceOrientationEvent) => {
-      const shell = shellRef.current;
-      if (!shell || !tiltEngine) return;
+      const card = cardRef.current;
+      if (!card || !tiltEngine) return;
 
       const { beta, gamma } = event;
       if (beta == null || gamma == null) return;
 
-      const centerX = shell.clientWidth / 2;
-      const centerY = shell.clientHeight / 2;
-      const x = clamp(centerX + gamma * mobileTiltSensitivity, 0, shell.clientWidth);
+      card.classList.add('active');
+
+      const centerX = card.clientWidth / 2;
+      const centerY = card.clientHeight / 2;
+      const x = clamp(centerX + gamma * mobileTiltSensitivity, 0, card.clientWidth);
       const y = clamp(
         centerY + (beta - ANIMATION_CONFIG.DEVICE_BETA_OFFSET) * mobileTiltSensitivity,
         0,
-        shell.clientHeight
+        card.clientHeight
       );
 
       tiltEngine.setTarget(x, y);
@@ -285,7 +288,8 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
     };
     shell.addEventListener('click', handleClick);
 
-    const initialX = (shell.clientWidth || 0) - ANIMATION_CONFIG.INITIAL_X_OFFSET;
+    const card = cardRef.current;
+    const initialX = (card?.clientWidth || shell.clientWidth || 0) - ANIMATION_CONFIG.INITIAL_X_OFFSET;
     const initialY = ANIMATION_CONFIG.INITIAL_Y_OFFSET;
     tiltEngine.setImmediate(initialX, initialY);
     tiltEngine.toCenter();
@@ -300,7 +304,8 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
       if (enterTimerRef.current) window.clearTimeout(enterTimerRef.current);
       if (leaveRafRef.current) cancelAnimationFrame(leaveRafRef.current);
       tiltEngine.cancel();
-      shell.classList.remove('entering');
+      cardRef.current?.classList.remove('entering');
+      cardRef.current?.classList.remove('active');
     };
   }, [
     enableTilt,
@@ -332,7 +337,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
     <div ref={wrapRef} className={`pc-card-wrapper ${className}`.trim()} style={cardStyle}>
       {behindGlowEnabled && <div className="pc-behind" />}
       <div ref={shellRef} className="pc-card-shell">
-        <section className="pc-card">
+        <section ref={cardRef} className="pc-card">
           <div className="pc-inside">
             <div className="pc-shine" />
             <div className="pc-glare" />

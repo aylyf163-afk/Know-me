@@ -87,6 +87,12 @@ export default function V0CardScanner({ lang = 'zh' }: { lang?: 'zh' | 'en' }) {
       isPausedByHover = false
       pointerDownX = 0
       pointerDownAt = 0
+      hoverRaf = 0
+      isMouseOverCard = false
+      destroyed = false
+      animateRaf = 0
+      clippingRaf = 0
+      asciiInterval: number | null = null
 
       constructor(container: HTMLElement, cardLine: HTMLElement) {
         this.container = container
@@ -110,19 +116,39 @@ export default function V0CardScanner({ lang = 'zh' }: { lang?: 'zh' | 'en' }) {
       }
 
       setupEventListeners() {
-        this.cardLine.addEventListener('mousedown', (e) => this.startDrag(e))
+        // Use a non-moving hit area to avoid enter/leave oscillation while the line is translating.
+        this.container.addEventListener('mousedown', (e) => this.startDrag(e))
         document.addEventListener('mousemove', (e) => this.onDrag(e))
         document.addEventListener('mouseup', () => this.endDrag())
 
-        this.cardLine.addEventListener('touchstart', (e) => this.startDrag(e.touches[0]), { passive: false })
+        this.container.addEventListener('touchstart', (e) => this.startDrag(e.touches[0]), { passive: false })
         document.addEventListener('touchmove', (e) => this.onDrag(e.touches[0]), { passive: false })
         document.addEventListener('touchend', () => this.endDrag())
 
-        this.cardLine.addEventListener('wheel', (e) => this.onWheel(e), { passive: false })
-        this.cardLine.addEventListener('mouseenter', () => this.pauseByHover())
-        this.cardLine.addEventListener('mouseleave', () => this.resumeFromHover())
-        this.cardLine.addEventListener('selectstart', (e) => e.preventDefault())
-        this.cardLine.addEventListener('dragstart', (e) => e.preventDefault())
+        this.container.addEventListener('wheel', (e) => this.onWheel(e), { passive: false })
+        this.container.addEventListener('selectstart', (e) => e.preventDefault())
+        this.container.addEventListener('dragstart', (e) => e.preventDefault())
+
+        const updateHoverState = (clientX: number, clientY: number) => {
+          if (this.hoverRaf) return
+          this.hoverRaf = requestAnimationFrame(() => {
+            this.hoverRaf = 0
+            if (this.isDragging) return
+            const el = document.elementFromPoint(clientX, clientY) as Element | null
+            const overCard = Boolean(el?.closest('.v0cs-card-wrapper'))
+            if (overCard !== this.isMouseOverCard) {
+              this.isMouseOverCard = overCard
+              if (overCard) this.pauseByHover()
+              else this.resumeFromHover()
+            }
+          })
+        }
+
+        this.container.addEventListener('mousemove', (e) => updateHoverState(e.clientX, e.clientY))
+        this.container.addEventListener('mouseleave', () => {
+          this.isMouseOverCard = false
+          this.resumeFromHover()
+        })
 
         window.addEventListener('resize', () => this.calculateDimensions())
       }
@@ -200,6 +226,7 @@ export default function V0CardScanner({ lang = 'zh' }: { lang?: 'zh' | 'en' }) {
       }
 
       animate() {
+        if (this.destroyed) return
         const currentTime = performance.now()
         const deltaTime = (currentTime - this.lastTime) / 1000
         this.lastTime = currentTime
@@ -214,7 +241,7 @@ export default function V0CardScanner({ lang = 'zh' }: { lang?: 'zh' | 'en' }) {
           this.updateCardPosition()
         }
 
-        requestAnimationFrame(() => this.animate())
+        this.animateRaf = requestAnimationFrame(() => this.animate())
       }
 
       updateCardPosition() {
@@ -258,22 +285,79 @@ export default function V0CardScanner({ lang = 'zh' }: { lang?: 'zh' | 'en' }) {
         normalCard.className = 'v0cs-card v0cs-card-normal'
 
         const item = items[index % Math.max(1, items.length)]
-        const img = document.createElement('img')
-        img.className = 'v0cs-card-image'
-        img.src = item?.image || '/projects/project-1.png'
-        img.alt = item?.title || 'Experience'
-        normalCard.appendChild(img)
+        const header = document.createElement('div')
+        header.className = 'v0cs-card-head'
 
-        const meta = document.createElement('div')
-        meta.className = 'v0cs-card-meta'
+        const badge = document.createElement('div')
+        badge.className = 'v0cs-card-badge'
+        badge.textContent = `0${(index % Math.max(1, items.length)) + 1}`.slice(-2)
+
+        const titleWrap = document.createElement('div')
+        titleWrap.className = 'v0cs-card-titlewrap'
+
         const title = document.createElement('div')
         title.className = 'v0cs-card-title'
         title.textContent = item?.title || ''
+
+        const status = document.createElement('div')
+        status.className = 'v0cs-card-status'
+        status.textContent = i18n.t('projects.galleryViewDetails', { lng: lang })
+
+        titleWrap.appendChild(title)
+        titleWrap.appendChild(status)
+        header.appendChild(badge)
+        header.appendChild(titleWrap)
+
         const desc = document.createElement('div')
         desc.className = 'v0cs-card-desc'
         desc.textContent = item?.summary || (item?.goals?.[0] ?? '')
-        meta.appendChild(title)
+
+        const tags = document.createElement('div')
+        tags.className = 'v0cs-card-tags'
+        ;(item?.stack ?? []).slice(0, 4).forEach((t) => {
+          const tag = document.createElement('span')
+          tag.className = 'v0cs-card-tag'
+          tag.textContent = t
+          tags.appendChild(tag)
+        })
+
+        const footer = document.createElement('div')
+        footer.className = 'v0cs-card-foot'
+
+        const metric = document.createElement('div')
+        metric.className = 'v0cs-card-metric'
+        const metricLabel = document.createElement('span')
+        metricLabel.className = 'v0cs-card-metric-label'
+        metricLabel.textContent = i18n.t('projects.galleryOutcomes', { lng: lang })
+        const metricValue = document.createElement('span')
+        metricValue.className = 'v0cs-card-metric-value'
+        metricValue.textContent = item?.goals?.[0] || ''
+        metric.appendChild(metricLabel)
+        metric.appendChild(metricValue)
+
+        const thumb = document.createElement('div')
+        thumb.className = 'v0cs-card-thumb'
+        if (item?.image) {
+          const thumbImg = document.createElement('img')
+          thumbImg.className = 'v0cs-card-thumb-img'
+          thumbImg.src = item.image
+          thumbImg.alt = ''
+          thumb.appendChild(thumbImg)
+        } else {
+          const thumbFallback = document.createElement('div')
+          thumbFallback.className = 'v0cs-card-thumb-fallback'
+          thumb.appendChild(thumbFallback)
+        }
+
+        footer.appendChild(metric)
+        footer.appendChild(thumb)
+
+        const meta = document.createElement('div')
+        meta.className = 'v0cs-card-meta'
+        meta.appendChild(header)
         meta.appendChild(desc)
+        meta.appendChild(tags)
+        meta.appendChild(footer)
         normalCard.appendChild(meta)
 
         const asciiCard = document.createElement('div')
@@ -395,12 +479,24 @@ export default function V0CardScanner({ lang = 'zh' }: { lang?: 'zh' | 'en' }) {
       }
 
       startPeriodicUpdates() {
-        window.setInterval(() => this.updateAsciiContent(), 200)
+        this.asciiInterval = window.setInterval(() => this.updateAsciiContent(), 200)
         const updateClipping = () => {
+          if (this.destroyed) return
           this.updateCardClipping()
-          requestAnimationFrame(updateClipping)
+          this.clippingRaf = requestAnimationFrame(updateClipping)
         }
         updateClipping()
+      }
+
+      destroy() {
+        this.destroyed = true
+        if (this.hoverRaf) cancelAnimationFrame(this.hoverRaf)
+        if (this.animateRaf) cancelAnimationFrame(this.animateRaf)
+        if (this.clippingRaf) cancelAnimationFrame(this.clippingRaf)
+        if (this.asciiInterval) window.clearInterval(this.asciiInterval)
+        this.asciiInterval = null
+        document.body.style.userSelect = ''
+        document.body.style.cursor = ''
       }
     }
 
@@ -411,6 +507,8 @@ export default function V0CardScanner({ lang = 'zh' }: { lang?: 'zh' | 'en' }) {
       particles: THREE.Points<THREE.BufferGeometry, THREE.ShaderMaterial> | null = null
       particleCount = 400
       velocities = new Float32Array(0)
+      raf = 0
+      destroyed = false
 
       constructor(canvas: HTMLCanvasElement) {
         this.camera.position.z = 100
@@ -501,7 +599,8 @@ export default function V0CardScanner({ lang = 'zh' }: { lang?: 'zh' | 'en' }) {
       }
 
       animate() {
-        requestAnimationFrame(() => this.animate())
+        if (this.destroyed) return
+        this.raf = requestAnimationFrame(() => this.animate())
         if (this.particles) {
           const pos = this.particles.geometry.attributes.position.array as Float32Array
           const alpha = this.particles.geometry.attributes.alpha.array as Float32Array
@@ -532,6 +631,8 @@ export default function V0CardScanner({ lang = 'zh' }: { lang?: 'zh' | 'en' }) {
       }
 
       destroy() {
+        this.destroyed = true
+        if (this.raf) cancelAnimationFrame(this.raf)
         this.renderer.dispose()
         if (this.particles) {
           this.scene.remove(this.particles)
@@ -778,17 +879,16 @@ export default function V0CardScanner({ lang = 'zh' }: { lang?: 'zh' | 'en' }) {
     }
 
     const cardLineEl = cardLineRef.current
-    new CardStreamController(cardStreamRef.current, cardLineEl)
+    const controller = new CardStreamController(cardStreamRef.current, cardLineEl)
     const particleSystem = new ParticleSystem(particleCanvasRef.current)
     const particleScanner = new ParticleScanner(scannerCanvasRef.current)
     window.__v0ScannerSetScanning = (active: boolean) => particleScanner.setScanningActive(active)
 
     return () => {
+      controller.destroy()
       particleSystem.destroy()
       particleScanner.destroy()
       window.__v0ScannerSetScanning = undefined
-      document.body.style.userSelect = ''
-      document.body.style.cursor = ''
       cardLineEl.replaceChildren()
     }
   }, [items])

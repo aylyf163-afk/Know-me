@@ -1,0 +1,5 @@
+export { default as AboutPage } from './AboutPage.tsx'
+export { default as SkillsPage } from './SkillsPage.tsx'
+export { default as ProjectsPage } from './ProjectsPage.tsx'
+export { default as ContactPage } from './ContactPage.tsx'
+export { SECTION_ORDER, type SectionId } from './constants.ts'

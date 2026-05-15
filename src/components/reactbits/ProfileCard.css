@@ -81,7 +81,7 @@
   transform: translateZ(0) rotateX(var(--rotate-y)) rotateY(var(--rotate-x));
 }
 
-.pc-card-shell.entering .pc-card {
+.pc-card.entering {
   transition: transform 180ms ease-out;
 }
 

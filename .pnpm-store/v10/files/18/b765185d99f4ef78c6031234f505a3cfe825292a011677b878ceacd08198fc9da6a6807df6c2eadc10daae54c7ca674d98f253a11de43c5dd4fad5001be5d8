@@ -1984,7 +1984,7 @@ var RolldownOutputImpl = class extends PlainObjectLike {
 };
 __decorate([lazyProp], RolldownOutputImpl.prototype, "output", null);
 //#endregion
-//#region src/types/chunking-context.ts
+//#region src/types/chunking-Context.tsx
 var ChunkingContextImpl = class {
 	constructor(context) {
 		this.context = context;
