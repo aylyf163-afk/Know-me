@@ -127,15 +127,15 @@
   color: rgba(225, 236, 255, 0.62);
 }
 
-/* 项目经历：Shape Grid 背景（reactbits.dev/backgrounds/shape-grid）+ 时间线 */
+/* 项目经历：Galaxy 背景（reactbits.dev/backgrounds/galaxy）+ 时间线 */
 .projects-section.projects-section--grid {
   position: relative;
   padding: 84px 0 110px;
-  background: linear-gradient(180deg, #fafbfc 0%, #f4f5f9 48%, #eef1f6 100%);
+  background: #0a0a1a;
   overflow: hidden;
 }
 
-.projects-shape-grid-bg {
+.projects-galaxy-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -143,8 +143,14 @@
   pointer-events: none;
 }
 
-.projects-shape-grid-bg .shapegrid-canvas {
-  min-height: 100%;
+.projects-galaxy-bg > div {
+  width: 100%;
+  height: 100%;
+}
+
+.projects-galaxy-bg canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .projects-section.projects-section--grid .pta-wrap {
@@ -155,6 +161,7 @@
 .projects-header.projects-header--grid {
   position: relative;
   z-index: 1;
+  color: rgba(241, 245, 255, 0.96);
 }
 
 .projects-grid-subtitle {
@@ -163,7 +170,7 @@
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(15, 23, 42, 0.56);
+  color: rgba(225, 236, 255, 0.62);
 }
 
 .projects-showcase__aside {
